@@ -1,0 +1,58 @@
+import pickle
+from nodes import node
+
+class Bi_Tree():
+    
+    def __init__(self):
+        self.root = None
+    
+    
+    # Insertion function
+
+    def insert(self, vehicle):
+        def _insert(node, vehicle):
+
+            if node is None:
+                return node(vehicle)
+            
+            if vehicle.performance() < node.vehicle.performance():
+                node.left = _insert(node.left, vehicle)
+            else:
+                node.right = _insert(node.right, vehicle)
+            return node
+        
+        self.root = _insert(self.root, vehicle)
+    
+
+    # In-order Traversal
+     
+    def inorder_traversal(self):
+        def _inorder(node):
+           
+            if node:  # If the current node exists, continue. Otherwise (if it’s None), stop here. Without it, you’d get infinite recursive calls
+               
+                yield from _inorder(node.left) #“Yield” means “return this one value for now, but keep the function paused.”
+                yield node.vehicle
+                yield from _inorder(self.root)
+
+        yield from _inorder(self.root)
+
+
+    # Find a vehicle by Model
+
+    def find_by_model(self, model):
+        def _fetch(node, model):
+          
+            if node is None:
+                return None
+            if node.vehicle.model == model:
+                return node.vehicle
+                
+            left = _fetch(node.left, model)
+            
+            if left:
+                return left
+            else:
+                return _fetch(node.right, model)
+        
+        return _fetch(self.root, model)
